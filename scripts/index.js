@@ -16,9 +16,7 @@ function createCard(data) {
   cardImage.src = data.link;
   cardImage.alt = data.name;
 
-  deleteButton.addEventListener("click", function (e) {
-    e.target.closest(".card").remove();
-  });
+  deleteButton.addEventListener("click", cardDelete);
 
   return cardElement;
 }
@@ -30,5 +28,9 @@ initialCards.forEach((cardData) => {
   cardList.append(cardElement);
 });
 // @todo: Функция удаления карточки
+
+function cardDelete(e) {
+  e.target.closest(".card").remove();
+}
 
 // @todo: Вывести карточки на страницу
