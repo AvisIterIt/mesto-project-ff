@@ -1,2 +1,2 @@
-# Проектная работа Mesto
+https://github.com/AvisIterIt/mesto-project-ff
 
