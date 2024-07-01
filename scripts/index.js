@@ -4,7 +4,7 @@
 
 // @todo: Функция создания карточки
 
-function createCard(data) {
+function createCard(data, deleteCallback) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate.cloneNode(true);
 
@@ -16,7 +16,7 @@ function createCard(data) {
   cardImage.src = data.link;
   cardImage.alt = data.name;
 
-  deleteButton.addEventListener("click", cardDelete);
+  deleteButton.addEventListener("click", deleteCallback);
 
   return cardElement;
 }
@@ -24,12 +24,12 @@ function createCard(data) {
 const cardList = document.querySelector(".places__list");
 
 initialCards.forEach((cardData) => {
-  const cardElement = createCard(cardData);
+  const cardElement = createCard(cardData, deleteCard);
   cardList.append(cardElement);
 });
 // @todo: Функция удаления карточки
 
-function cardDelete(e) {
+function deleteCard(e) {
   e.target.closest(".card").remove();
 }
 
