@@ -66,8 +66,8 @@ const openModal = (modal) => {
 };
 
 editButton.addEventListener("click", () => {
-  cardNameInput.value = "1123";
-  console.log(cardNameInput);
+  nameInput.value = profileTitle.textContent;
+  jobInput.value = profileDescription.textContent;
   openModal(editModal);
 });
 addButton.addEventListener("click", () => {
@@ -98,11 +98,15 @@ const closeModal = (modal) => {
 
 // Закрытие попапа кликом на оверлей
 
-popup.addEventListener("click", (e) => {
+function onOverlayClick(e, modal) {
   if (e.currentTarget === e.target) {
-    closeModal(popup);
+    closeModal(modal);
   }
-});
+}
+
+editModal.addEventListener("click", (e) => onOverlayClick(e, editModal));
+addModal.addEventListener("click", (e) => onOverlayClick(e, addModal));
+cardModal.addEventListener("click", (e) => onOverlayClick(e, cardModal));
 
 // Закрытие через ESC
 
@@ -119,11 +123,11 @@ const formElement = document.querySelector(".popup__form");
 const nameInput = document.querySelector(".popup__input_type_name");
 const jobInput = document.querySelector(".popup__input_type_description");
 
+const profileTitle = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
+
 function handleFormSubmit(evt) {
   evt.preventDefault();
-
-  const profileTitle = document.querySelector(".profile__title");
-  const profileDescription = document.querySelector(".profile__description");
 
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
