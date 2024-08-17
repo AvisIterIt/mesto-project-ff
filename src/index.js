@@ -21,6 +21,10 @@ function createCard(data, deleteCallback) {
 
   deleteButton.addEventListener("click", deleteCallback);
 
+  cardImage.addEventListener("click", () => {
+    openImage(data.link, data.name);
+  });
+
   return cardElement;
 }
 
@@ -51,6 +55,7 @@ const cardModal = document.querySelector(".popup_type_image");
 
 const openModal = (modal) => {
   modal.classList.add("popup_is-opened");
+  modal.classList.add("popup_is-animated");
   document.addEventListener("keydown", closePopupEsc);
 };
 
@@ -66,22 +71,25 @@ cardImage.addEventListener("click", () => {
 
 // Закрытие popup по крестику
 
-const closeButton = document.querySelector(".popup__close");
+const editClose = editModal.querySelector(".popup__close");
+editClose.addEventListener("click", () => {
+  closeModal(editModal);
+});
+
+const addClose = addModal.querySelector(".popup__close");
+addClose.addEventListener("click", () => {
+  closeModal(addModal);
+});
+
+const cardClose = cardModal.querySelector(".popup__close");
+cardClose.addEventListener("click", () => {
+  closeModal(cardModal);
+});
 
 const closeModal = (modal) => {
   modal.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", closePopupEsc);
 };
-
-closeButton.addEventListener("click", () => {
-  closeModal(editModal);
-});
-closeButton.addEventListener("click", () => {
-  closeModal(addModal);
-});
-closeButton.addEventListener("click", () => {
-  closeModal(cardModal);
-});
 
 // Закрытие попапа кликом на оверлей
 
@@ -102,24 +110,13 @@ function closePopupEsc(e) {
 
 // Редактирование имени и информации о себе
 
-// Находим форму в DOM
 const formElement = document.querySelector(".popup__form");
-// Находим поля формы в DOM
 const nameInput = document.querySelector(".popup__input_type_name");
 const jobInput = document.querySelector(".popup__input_type_description");
 
-// Обработчик «отправки» формы, хотя пока
-// она никуда отправляться не будет
 function handleFormSubmit(evt) {
-  evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
-  // Так мы можем определить свою логику отправки.
-  // О том, как это делать, расскажем позже.
+  evt.preventDefault();
 
-  // Получите значение полей jobInput и nameInput из свойства value
-
-  // Выберите элементы, куда должны быть вставлены значения полей
-
-  // Вставьте новые значения с помощью textContent
   const profileTitle = document.querySelector(".profile__title");
   const profileDescription = document.querySelector(".profile__description");
 
@@ -127,6 +124,49 @@ function handleFormSubmit(evt) {
   profileDescription.textContent = jobInput.value;
 }
 
-// Прикрепляем обработчик к форме:
-// он будет следить за событием “submit” - «отправка»
 formElement.addEventListener("submit", handleFormSubmit);
+
+// Добавление карточки
+
+const cardNameInput = document.querySelector(".popup__input_type_card-name");
+const cardLinkInput = document.querySelector(".popup__input_type_url");
+const addCardForm = document.querySelector('.popup__form[name="new-place"]');
+
+function addCardSubmit(e) {
+  e.preventDefault();
+  const name = cardNameInput.value;
+  const link = cardLinkInput.value;
+
+  const newCard = createCard({ name, link });
+  addCard(newCard);
+  addCardForm.reset();
+  closeModal(addCardForm);
+}
+
+function addCard(card) {
+  cardList.prepend(card);
+}
+
+addCardForm.addEventListener("submit", addCardSubmit);
+
+// Лайк карточки
+
+const card = document.querySelector(".card");
+const like = card.querySelector(".card__like-button");
+
+like.addEventListener("click", (e) => {
+  if (e.target.classList.contains("card__like-button")) {
+    e.target.classList.toggle("card__like-button_is-active");
+  }
+});
+
+// Открытие попапа с картинкой
+
+const imagePopup = document.querySelector(".popup__image");
+const imageCaption = document.querySelector(".popup__caption");
+
+function openImage(link, name) {
+  imagePopup.src = link;
+  imageCaption.alt = name;
+  imageCaption.textContent = name;
+}
