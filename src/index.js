@@ -14,6 +14,7 @@ function createCard(data, deleteCallback) {
   const cardTitle = cardElement.querySelector(".card__title");
   const cardImage = cardElement.querySelector(".card__image");
   const deleteButton = cardElement.querySelector(".card__delete-button");
+  const like = cardElement.querySelector(".card__like-button");
 
   cardTitle.textContent = data.name;
   cardImage.src = data.link;
@@ -23,6 +24,12 @@ function createCard(data, deleteCallback) {
 
   cardImage.addEventListener("click", () => {
     openImage(data.link, data.name);
+  });
+
+  like.addEventListener("click", (e) => {
+    if (e.target.classList.contains("card__like-button")) {
+      likeCallback(e);
+    }
   });
 
   return cardElement;
@@ -47,7 +54,6 @@ function deleteCard(e) {
 const popup = document.querySelector(".popup");
 const editButton = document.querySelector(".profile__edit-button");
 const addButton = document.querySelector(".profile__add-button");
-const cardImage = document.querySelector(".card__image");
 
 const editModal = document.querySelector(".popup_type_edit");
 const addModal = document.querySelector(".popup_type_new-card");
@@ -60,13 +66,12 @@ const openModal = (modal) => {
 };
 
 editButton.addEventListener("click", () => {
+  cardNameInput.value = "1123";
+  console.log(cardNameInput);
   openModal(editModal);
 });
 addButton.addEventListener("click", () => {
   openModal(addModal);
-});
-cardImage.addEventListener("click", () => {
-  openModal(cardModal);
 });
 
 // Закрытие popup по крестику
@@ -151,14 +156,9 @@ addCardForm.addEventListener("submit", addCardSubmit);
 
 // Лайк карточки
 
-const card = document.querySelector(".card");
-const like = card.querySelector(".card__like-button");
-
-like.addEventListener("click", (e) => {
-  if (e.target.classList.contains("card__like-button")) {
-    e.target.classList.toggle("card__like-button_is-active");
-  }
-});
+function likeCallback(e) {
+  e.target.classList.toggle("card__like-button_is-active");
+}
 
 // Открытие попапа с картинкой
 
@@ -169,4 +169,5 @@ function openImage(link, name) {
   imagePopup.src = link;
   imageCaption.alt = name;
   imageCaption.textContent = name;
+  openModal(cardModal);
 }
