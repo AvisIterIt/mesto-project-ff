@@ -1,4 +1,6 @@
-import { imagePopup, imageCaption, cardModal } from "../../index.js";
+export const cardModal = document.querySelector(".popup_type_image"); // Модальное окно увеличенная картинка
+export const imagePopup = document.querySelector(".popup__image"); // Картинка, которая вставляется в попап
+export const imageCaption = document.querySelector(".popup__caption"); // Текст, который вставляется в попап
 
 // Открытие модального окна
 
@@ -7,15 +9,6 @@ export const openModal = (modal) => {
   modal.classList.add("popup_is-animated");
   document.addEventListener("keydown", closePopupEsc);
 };
-
-// Добавление карточки
-
-export function openImage(link, name) {
-  imagePopup.src = link;
-  imageCaption.alt = name;
-  imageCaption.textContent = name;
-  openModal(cardModal);
-}
 
 // Закрытие через ESC
 
