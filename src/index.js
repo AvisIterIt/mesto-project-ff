@@ -9,6 +9,7 @@ import {
   nameInput,
   profileDescription,
   jobInput,
+  likeCallback,
 } from "./components/card.js";
 import {
   onOverlayClick,
@@ -30,7 +31,14 @@ const cardLinkInput = document.querySelector(".popup__input_type_url"); // Ин�
 // Создание карточек
 
 initialCards.forEach((cardData) => {
-  const cardElement = createCard(cardData, deleteCard);
+  const cardElement = createCard(
+    cardData,
+    deleteCard,
+    () => {
+      openImage(cardData.link, cardData.name);
+    },
+    likeCallback
+  );
   cardList.append(cardElement);
 });
 
@@ -88,7 +96,14 @@ function addCardSubmit(e) {
   const name = cardNameInput.value;
   const link = cardLinkInput.value;
 
-  const newCard = createCard({ name, link });
+  const newCard = createCard(
+    { name, link },
+    deleteCard,
+    () => {
+      openImage(cardData.link, cardData.name);
+    },
+    likeCallback
+  );
   addCard(newCard);
   addCardForm.reset();
   closeModal(addCardForm);
@@ -99,7 +114,7 @@ function addCard(card) {
   cardList.prepend(card);
 }
 
-export function openImage(link, name) {
+function openImage(link, name) {
   imagePopup.src = link;
   imageCaption.alt = name;
   imageCaption.textContent = name;

@@ -1,5 +1,3 @@
-import { openImage } from "../index.js";
-
 export const cardList = document.querySelector(".places__list"); // Карточка
 export const nameInput = document.querySelector(".popup__input_type_name"); // Инпут 'Имя'
 export const jobInput = document.querySelector(
@@ -15,7 +13,7 @@ export const profileDescription = document.querySelector(
 
 // Функция создания карточки
 
-export function createCard(data, deleteCallback) {
+export function createCard(data, deleteCallback, imgCallback, likeCallback) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate.cloneNode(true);
 
@@ -30,15 +28,9 @@ export function createCard(data, deleteCallback) {
 
   deleteButton.addEventListener("click", deleteCallback);
 
-  cardImage.addEventListener("click", () => {
-    openImage(data.link, data.name);
-  });
+  cardImage.addEventListener("click", imgCallback);
 
-  like.addEventListener("click", (e) => {
-    if (e.target.classList.contains("card__like-button")) {
-      likeCallback(e);
-    }
-  });
+  like.addEventListener("click", likeCallback);
 
   return cardElement;
 }
@@ -52,5 +44,7 @@ export function deleteCard(e) {
 // Лайк карточки
 
 export function likeCallback(e) {
-  e.target.classList.toggle("card__like-button_is-active");
+  if (e.target.classList.contains("card__like-button")) {
+    e.target.classList.toggle("card__like-button_is-active");
+  }
 }
