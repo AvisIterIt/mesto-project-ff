@@ -1,24 +1,7 @@
 import "../src/pages/index.css";
 import { initialCards } from "./components/cards.js";
-import {
-  createCard,
-  deleteCard,
-  cardList,
-  addCardForm,
-  profileTitle,
-  nameInput,
-  profileDescription,
-  jobInput,
-  likeCallback,
-} from "./components/card.js";
-import {
-  onOverlayClick,
-  closeModal,
-  openModal,
-  cardModal,
-  imagePopup,
-  imageCaption,
-} from "./components/modal.js";
+import { createCard, deleteCard, likeCallback } from "./components/card.js";
+import { onOverlayClick, closeModal, openModal } from "./components/modal.js";
 
 const editButton = document.querySelector(".profile__edit-button"); // Кнопка редактирования имени и информации о себе
 const addButton = document.querySelector(".profile__add-button"); // Кнопка добавления карточки
@@ -27,18 +10,20 @@ const addModal = document.querySelector(".popup_type_new-card"); // Модаль
 const editformElement = editModal.querySelector(".popup__form"); // Попап форм
 const cardNameInput = document.querySelector(".popup__input_type_card-name"); // Инпут 'Название'
 const cardLinkInput = document.querySelector(".popup__input_type_url"); // Инпут 'Ссылка на картинку'
+const cardList = document.querySelector(".places__list"); // Карточка
+const nameInput = document.querySelector(".popup__input_type_name"); // Инпут 'Имя'
+const jobInput = document.querySelector(".popup__input_type_description"); // Инпут 'Занятие'
+const addCardForm = document.querySelector('.popup__form[name="new-place"]'); // Вся форма
+const profileTitle = document.querySelector(".profile__title"); // Поле, которое изменяет 'Имя'
+const profileDescription = document.querySelector(".profile__description"); // Поле, которое изменяет 'Занятие'
+const cardModal = document.querySelector(".popup_type_image"); // Модальное окно увеличенная картинка
+const imagePopup = document.querySelector(".popup__image"); // Картинка, которая вставляется в попап
+const imageCaption = document.querySelector(".popup__caption"); // Текст, который вставляется в попап
 
 // Создание карточек
 
 initialCards.forEach((cardData) => {
-  const cardElement = createCard(
-    cardData,
-    deleteCard,
-    () => {
-      openImage(cardData.link, cardData.name);
-    },
-    likeCallback
-  );
+  const cardElement = createCard(cardData, deleteCard, openImage, likeCallback);
   cardList.append(cardElement);
 });
 
@@ -100,13 +85,12 @@ function addCardSubmit(e) {
     { name, link },
     deleteCard,
     () => {
-      openImage(cardData.link, cardData.name);
+      openImage(link, name);
     },
     likeCallback
   );
   addCard(newCard);
   addCardForm.reset();
-  closeModal(addCardForm);
   closeModal(addModal);
 }
 

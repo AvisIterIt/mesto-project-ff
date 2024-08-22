@@ -1,16 +1,3 @@
-export const cardList = document.querySelector(".places__list"); // Карточка
-export const nameInput = document.querySelector(".popup__input_type_name"); // Инпут 'Имя'
-export const jobInput = document.querySelector(
-  ".popup__input_type_description"
-); // Инпут 'Занятие'
-export const addCardForm = document.querySelector(
-  '.popup__form[name="new-place"]'
-); // Вся форма
-export const profileTitle = document.querySelector(".profile__title"); // Поле, которое изменяет 'Имя'
-export const profileDescription = document.querySelector(
-  ".profile__description"
-); // Поле, которое изменяет 'Занятие'
-
 // Функция создания карточки
 
 export function createCard(data, deleteCallback, imgCallback, likeCallback) {
@@ -28,7 +15,7 @@ export function createCard(data, deleteCallback, imgCallback, likeCallback) {
 
   deleteButton.addEventListener("click", deleteCallback);
 
-  cardImage.addEventListener("click", imgCallback);
+  cardImage.addEventListener("click", () => imgCallback(data.link, data.name));
 
   like.addEventListener("click", likeCallback);
 
