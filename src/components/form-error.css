@@ -1,0 +1,25 @@
+.popup__input:invalid {
+  border-bottom: 1px solid red;
+}
+
+.popup__error {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15px;
+}
+
+.popup__error-active {
+  color: #ff0000;
+}
+
+.form__submit_inactive {
+  background-color: transparent;
+  color: #000000;
+  border: 1px solid #000000;
+  opacity: 0.2;
+}
+
+.form__submit_inactive:hover {
+  background-color: transparent;
+}

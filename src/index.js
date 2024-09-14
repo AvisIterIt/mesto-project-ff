@@ -106,3 +106,117 @@ function openImage(link, name) {
 }
 
 addCardForm.addEventListener("submit", addCardSubmit);
+
+// Формы error
+
+const showInputError = (formElement, inputElement, errorMessage) => {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  errorElement.textContent = errorMessage;
+  errorElement.classList.add("popup__error-active");
+};
+
+const hideInputError = (formElement, inputElement) => {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  errorElement.classList.add("popup__error-active");
+  errorElement.textContent = "";
+};
+
+function isValid(formElement, inputElement) {
+  if (inputElement.validity.patternMismatch) {
+    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
+  } else {
+    inputElement.setCustomValidity("");
+  }
+  if (!inputElement.validity.valid) {
+    showInputError(formElement, inputElement, inputElement.validationMessage);
+  } else {
+    hideInputError(formElement, inputElement);
+  }
+}
+
+const setEventListeners = (formElement) => {
+  const inputList = Array.from(formElement.querySelectorAll(".popup__input"));
+  const buttonElement = formElement.querySelector(".button");
+  inputList.forEach((inputElement) => {
+    inputElement.addEventListener("input", () => {
+      isValid(formElement, inputElement);
+      toggleButtonState(inputList, buttonElement);
+    });
+  });
+};
+
+const enableValidation = () => {
+  const formList = Array.from(document.querySelectorAll(".popup__form"));
+  formList.forEach((formElement) => {
+    setEventListeners(formElement);
+  });
+};
+
+enableValidation();
+
+// Кнопка
+
+// Функция принимает массив полей
+
+const hasInvalidInput = (inputList) => {
+  return inputList.some((inputElement) => {
+    return !inputElement.validity.valid;
+  });
+};
+
+// Функция принимает массив полей ввода
+// и элемент кнопки, состояние которой нужно менять
+
+const toggleButtonState = (inputList, buttonElement) => {
+  if (hasInvalidInput(inputList)) {
+    buttonElement.disabled = true;
+    buttonElement.classList.add("form__submit_inactive");
+  } else {
+    buttonElement.disabled = false;
+    buttonElement.classList.remove("form__submit_inactive");
+  }
+};
+
+// API
+
+// function api() {
+//   return fetch("https://mesto.nomoreparties.co/v1/wff-cohort-23/cards", {
+//     headers: {
+//       authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
+//     },
+//   })
+//     .then((res) => res.json())
+//     .then((result) => {
+//       console.log(result);
+//     });
+// }
+
+// api();
+
+// function getPerson() {
+//   return fetch("https://mesto.nomoreparties.co/v1/wff-cohort-23/users/me", {
+//     headers: {
+//       authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
+//     },
+//   })
+//     .then((res) => res.json())
+//     .then((result) => {
+//       console.log(result);
+//     });
+// }
+
+// getPerson();
+
+function arr() {
+  return fetch("https://nomoreparties.co/v1/wff-cohort-23/cards", {
+    headers: {
+      authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+    });
+}
+
+arr();
