@@ -1,13 +1,15 @@
 import "../src/pages/index.css";
-import { initialCards } from "./components/cards.js";
 import { createCard, deleteCard, likeCallback } from "./components/card.js";
 import { onOverlayClick, closeModal, openModal } from "./components/modal.js";
+import { _enableValidation } from "./components/validation.js";
 
 const editButton = document.querySelector(".profile__edit-button"); // Кнопка редактирования имени и информации о себе
 const addButton = document.querySelector(".profile__add-button"); // Кнопка добавления карточки
+const avatarButton = document.querySelector(".profile__image"); //
 const editModal = document.querySelector(".popup_type_edit"); // Модальное окно редактирования
 const addModal = document.querySelector(".popup_type_new-card"); // Модальное окно добавление карточки
-const editformElement = editModal.querySelector(".popup__form"); // Попап форм
+const avatarModal = document.querySelector(".popup_type_avatar"); //
+const editFormElement = editModal.querySelector(".popup__form"); // Попап форм
 const cardNameInput = document.querySelector(".popup__input_type_card-name"); // Инпут 'Название'
 const cardLinkInput = document.querySelector(".popup__input_type_url"); // Инпут 'Ссылка на картинку'
 const cardList = document.querySelector(".places__list"); // Карточка
@@ -20,13 +22,6 @@ const cardModal = document.querySelector(".popup_type_image"); // Модальн
 const imagePopup = document.querySelector(".popup__image"); // Картинка, которая вставляется в попап
 const imageCaption = document.querySelector(".popup__caption"); // Текст, который вставляется в попап
 
-// Создание карточек
-
-initialCards.forEach((cardData) => {
-  const cardElement = createCard(cardData, deleteCard, openImage, likeCallback);
-  cardList.append(cardElement);
-});
-
 // Открытие popup
 
 editButton.addEventListener("click", () => {
@@ -37,6 +32,10 @@ editButton.addEventListener("click", () => {
 
 addButton.addEventListener("click", () => {
   openModal(addModal);
+});
+
+avatarButton.addEventListener("click", () => {
+  openModal(avatarModal);
 });
 
 // Закрытие popup по крестику
@@ -56,23 +55,35 @@ cardClose.addEventListener("click", () => {
   closeModal(cardModal);
 });
 
+const avatarClose = avatarModal.querySelector(".popup__close");
+avatarClose.addEventListener("click", () => {
+  closeModal(avatarModal);
+});
+
 // Закрытие попапа кликом на оверлей
 
 editModal.addEventListener("click", (e) => onOverlayClick(e, editModal));
 addModal.addEventListener("click", (e) => onOverlayClick(e, addModal));
 cardModal.addEventListener("click", (e) => onOverlayClick(e, cardModal));
+avatarModal.addEventListener("click", (e) => onOverlayClick(e, avatarModal));
 
 // Редактирование имени и информации о себе
 
 function handleFormSubmit(evt) {
   evt.preventDefault();
 
-  profileTitle.textContent = nameInput.value;
-  profileDescription.textContent = jobInput.value;
+  const name = nameInput.value;
+  const about = jobInput.value;
+
+  profileTitle.textContent = name;
+  profileDescription.textContent = about;
+
+  editingProfileApi(name, about);
+
   closeModal(editModal);
 }
 
-editformElement.addEventListener("submit", handleFormSubmit);
+editFormElement.addEventListener("submit", handleFormSubmit);
 
 // Добавление карточки
 
@@ -90,6 +101,7 @@ function addCardSubmit(e) {
     likeCallback
   );
   addCard(newCard);
+  addCardApi(name, link);
   addCardForm.reset();
   closeModal(addModal);
 }
@@ -152,20 +164,21 @@ const enableValidation = () => {
   });
 };
 
-enableValidation();
-
-// Кнопка
-
-// Функция принимает массив полей
+// enableValidation()
+_enableValidation({
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup_error_visible",
+});
 
 const hasInvalidInput = (inputList) => {
   return inputList.some((inputElement) => {
     return !inputElement.validity.valid;
   });
 };
-
-// Функция принимает массив полей ввода
-// и элемент кнопки, состояние которой нужно менять
 
 const toggleButtonState = (inputList, buttonElement) => {
   if (hasInvalidInput(inputList)) {
@@ -179,36 +192,10 @@ const toggleButtonState = (inputList, buttonElement) => {
 
 // API
 
-// function api() {
-//   return fetch("https://mesto.nomoreparties.co/v1/wff-cohort-23/cards", {
-//     headers: {
-//       authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
-//     },
-//   })
-//     .then((res) => res.json())
-//     .then((result) => {
-//       console.log(result);
-//     });
-// }
+// Отображение картинок с сервера
 
-// api();
-
-// function getPerson() {
-//   return fetch("https://mesto.nomoreparties.co/v1/wff-cohort-23/users/me", {
-//     headers: {
-//       authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
-//     },
-//   })
-//     .then((res) => res.json())
-//     .then((result) => {
-//       console.log(result);
-//     });
-// }
-
-// getPerson();
-
-function arr() {
-  return fetch("https://nomoreparties.co/v1/wff-cohort-23/cards", {
+function arrCard() {
+  fetch("https://nomoreparties.co/v1/wff-cohort-23/cards", {
     headers: {
       authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
     },
@@ -216,7 +203,137 @@ function arr() {
     .then((res) => res.json())
     .then((data) => {
       console.log(data);
+      data.forEach((cardData) => {
+        const cardElement = createCard(
+          cardData,
+          deleteCard,
+          openImage,
+          likeCallback
+        );
+        cardList.append(cardElement);
+      });
     });
 }
 
-arr();
+arrCard();
+
+// Редактирование профиля
+
+function editingProfileApi(name, about) {
+  fetch("https://nomoreparties.co/v1/wff-cohort-23/users/me", {
+    method: "PATCH",
+    headers: {
+      authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: name,
+      about: about,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.error("Error:", error));
+}
+
+// Аватар
+
+function avatarImgApi(avatarUrl) {
+  fetch("https://nomoreparties.co/v1/wff-cohort-23/users/me/avatar", {
+    method: "PATCH",
+    headers: {
+      authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      avatar: avatarUrl,
+    }),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        return Promise.reject(`Ошибка: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((data) => {
+      // Обновляем аватар на странице
+      const profileImage = document.querySelector(".profile__image");
+      profileImage.style.backgroundImage = `url(${data.avatar})`;
+    })
+    .catch((error) => console.error("Error:", error));
+}
+
+const avatarPopup = document.querySelector(".popup_type_avatar");
+const avatarForm = avatarPopup.querySelector(".popup__form");
+const avatarInput = avatarForm.querySelector(".popup__input_type_url");
+
+avatarForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const avatarUrl = avatarInput.value;
+
+  // Отправляем запрос для обновления аватара
+  avatarImgApi(avatarUrl);
+
+  // Закрываем форму после успешного обновления
+  closeModal(avatarModal);
+});
+
+// Добавление карточки
+
+function addCardApi(name, link) {
+  fetch("https://nomoreparties.co/v1/wff-cohort-23/cards", {
+    method: "POST",
+    headers: {
+      authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: name,
+      link: link,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.error("Error:", error));
+}
+
+// Удаление карточки
+
+function deleteCardApi(cardId) {
+  fetch(`https://nomoreparties.co/v1/wff-cohort-23/cards/${cardId}`, {
+    method: "DELETE",
+    headers: {
+      authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.error("Error:", error));
+}
+
+// Отображение лайков / Постановка и снятие лайка
+
+export function visibleLikes(isLiked, cardId) {
+  const method = isLiked ? "PUT" : "DELETE";
+
+  fetch(`https://nomoreparties.co/v1/wff-cohort-23/cards/likes/${cardId}`, {
+    method: method,
+    headers: {
+      authorization: "98880455-a778-400c-9f69-6ddd0f45b45d",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        return Promise.reject(`Ошибка: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((updatedCardData) => {
+      const likeCountElement = document.querySelector(
+        `.card[data-id="${cardId}"] .card__like-count`
+      );
+      likeCountElement.textContent = updatedCardData.likes.length;
+    })
+    .catch((error) => console.error("Error:", error));
+}
