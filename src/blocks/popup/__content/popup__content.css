@@ -17,3 +17,9 @@
     padding: 30px 20px;
   }
 }
+
+/* Форма */
+
+.popup_type_avatar .popup__content {
+  min-height: 0;
+}

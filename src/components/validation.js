@@ -1,48 +1,44 @@
-// {
-//     formSelector: "",
-//     inputSelector: "",
-//     submitButtonSelector: "",
-//     inactiveButtonClass: "",
-//     inputErrorClass: "",
-//     errorClass: "",
-// }
-
 function isValid(pattern, text) {
-    return pattern.test(text)
+  return pattern.test(text);
 }
 
 function isEmpty(text) {
-    return text.length === 0
+  return text.length === 0;
 }
 
-export function _enableValidation(options) {
-    const forms = document.querySelectorAll(options.formSelector)
+export function enableValidation(options) {
+  const forms = document.querySelectorAll(options.formSelector);
 
-    forms.forEach((form) => {
-        const inputs = form.querySelectorAll(options.inputSelector)
-        const submitButton = form.querySelector(options.submitButtonSelector)
+  forms.forEach((form) => {
+    const inputs = form.querySelectorAll(options.inputSelector);
+    const submitButton = form.querySelector(options.submitButtonSelector);
 
-        inputs.forEach((input) => {
-            const errorElement = form.querySelector(`.${input.id}-error`)
+    inputs.forEach((input) => {
+      const errorElement = form.querySelector(`.${input.id}-error`);
 
-            input.addEventListener("input", () => {
-                const text = input.value
-                if (isEmpty(text) || !isValid(new RegExp(input.pattern), text)) {
-                    const errorMessage = isEmpty(text)
-                        ? "Вы пропустили это поле."
-                        : input.getAttribute("data-error-message")
+      input.addEventListener("input", () => {
+        const text = input.value;
 
-                    input.classList.add(options.inputErrorClass)
-                    submitButton.classList.add(options.inactiveButtonClass)
-                    errorElement.classList.add(options.errorClass)
-                    errorElement.textContent = errorMessage
-                } else {
-                    submitButton.classList.remove(options.inactiveButtonClass)
-                    input.classList.remove(options.inputErrorClass)
-                    errorElement.classList.remove(options.errorClass)
-                    errorElement.textContent = ""
-                }
-            })
-        })
-    })
+        let errorMessage = "";
+
+        if (isEmpty(text)) errorMessage = "Вы пропустили это поле.";
+        else if (text.length < 2)
+          errorMessage = "Длина должна быть больше 1 символа";
+        else if (!isValid(new RegExp(input.pattern), text))
+          errorMessage = input.getAttribute("data-error-message");
+
+        if (errorMessage) {
+          input.classList.add(options.inputErrorClass);
+          submitButton.classList.add(options.inactiveButtonClass);
+          errorElement.classList.add(options.errorClass);
+          errorElement.textContent = errorMessage;
+        } else {
+          submitButton.classList.remove(options.inactiveButtonClass);
+          input.classList.remove(options.inputErrorClass);
+          errorElement.classList.remove(options.errorClass);
+          errorElement.textContent = "";
+        }
+      });
+    });
+  });
 }
