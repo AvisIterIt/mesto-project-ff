@@ -1,5 +1,21 @@
-import { updateVisibleLikes } from "../components/api";
+import { updateVisibleLikes, deleteCardApi } from "../components/api";
 import { myId } from "./constants";
+import { getCards } from "./api";
+import { openImage, cardList } from "../index";
+
+// Отображение карточек
+
+getCards().then((data) => {
+  data.forEach((cardData) => {
+    const cardElement = createCard(
+      cardData,
+      deleteCard,
+      openImage,
+      likeCallback
+    );
+    cardList.append(cardElement);
+  });
+});
 
 // Функция создания карточки
 export function createCard(data, deleteCallback, imgCallback, likeCallback) {
@@ -31,6 +47,18 @@ export function createCard(data, deleteCallback, imgCallback, likeCallback) {
   likeButton.addEventListener("click", (e) => likeCallback(e, data, likeCount));
 
   return cardElement;
+}
+
+// Удаление карточки
+
+export function deleteCard(e, id) {
+  deleteCardApi(id)
+    .then(() => {
+      e.target.closest(".card").remove();
+    })
+    .catch((error) => {
+      console.error("Ошибка при удалении карточки:", error);
+    });
 }
 
 // Лайк карточки

@@ -1,14 +1,13 @@
 import "../src/pages/index.css";
-import { createCard, likeCallback } from "./components/card.js";
+import { createCard, likeCallback, deleteCard } from "./components/card.js";
 import { cohort, myId } from "./components/constants.js";
-import { deleteCard } from "./components/delete-card.js";
-import { loadProfile } from "./components/load-profile.js";
 import { onOverlayClick, closeModal, openModal } from "./components/modal.js";
 import { enableValidation } from "./components/validation.js";
 import {
   editingProfileApi,
   avatarImgApi,
   addCardApi,
+  fetchProfile,
 } from "./components/api.js";
 
 const editButton = document.querySelector(".profile__edit-button"); // Кнопка редактирования имени и информации о себе
@@ -29,9 +28,7 @@ const profileDescription = document.querySelector(".profile__description"); // �
 const cardModal = document.querySelector(".popup_type_image"); // Модальное окно увеличенная картинка
 const imagePopup = document.querySelector(".popup__image"); // Картинка, которая вставляется в попап
 const imageCaption = document.querySelector(".popup__caption"); // Текст, который вставляется в попап
-export const saveButton = document.querySelector(".button");
-const avatarPopup = document.querySelector(".popup_type_avatar");
-const avatarForm = avatarPopup.querySelector(".popup__form");
+const avatarForm = avatarModal.querySelector(".popup__form");
 const avatarInput = avatarForm.querySelector(".popup__input_type_url");
 
 // Открытие popup
@@ -86,14 +83,17 @@ function handleFormSubmit(evt) {
 
   const name = nameInput.value;
   const about = jobInput.value;
-
-  saveButton.textContent = "Сохранение...";
-  saveButton.disabled = true;
+  const editSaveButton = editModal.querySelector(".button");
+  editSaveButton.textContent = "Сохранение...";
+  editSaveButton.disabled = true;
 
   profileTitle.textContent = name;
   profileDescription.textContent = about;
 
-  editingProfileApi(name, about);
+  editingProfileApi(name, about).finally(() => {
+    editSaveButton.textContent = "Сохранить";
+    editSaveButton.disabled = false;
+  });
 
   closeModal(editModal);
 }
@@ -106,9 +106,10 @@ function addCardSubmit(e) {
   e.preventDefault();
   const name = cardNameInput.value;
   const link = cardLinkInput.value;
+  const addSaveButton = addModal.querySelector(".button");
 
-  saveButton.textContent = "Сохранение...";
-  saveButton.disabled = true;
+  addSaveButton.textContent = "Сохранение...";
+  addSaveButton.disabled = true;
 
   const newCard = createCard(
     {
@@ -130,7 +131,10 @@ function addCardSubmit(e) {
     likeCallback
   );
   addCard(newCard);
-  addCardApi(name, link);
+  addCardApi(name, link).finally(() => {
+    addSaveButton.textContent = "Сохранить";
+    addSaveButton.disabled = false;
+  });
   addCardForm.reset();
   closeModal(addModal);
 }
@@ -161,10 +165,33 @@ enableValidation({
 
 avatarForm.addEventListener("submit", (e) => {
   e.preventDefault();
+  const avatarSaveButton = avatarModal.querySelector(".button");
+  avatarSaveButton.textContent = "Сохранение...";
+  avatarSaveButton.disabled = true;
   const avatarUrl = avatarInput.value;
 
-  avatarImgApi(avatarUrl);
+  avatarImgApi(avatarUrl)
+    .then((data) => {
+      const profileImage = document.querySelector(".profile__image");
+      profileImage.style.backgroundImage = `url(${data.avatar})`;
+    })
+    .finally(() => {
+      avatarSaveButton.textContent = "Сохранить";
+      avatarSaveButton.disabled = false;
+    });
   closeModal(avatarModal);
 });
+
+export function loadProfile() {
+  const title = document.querySelector(".profile__title");
+  const description = document.querySelector(".profile__description");
+  const avatar = document.querySelector(".profile__image");
+
+  fetchProfile().then((data) => {
+    title.textContent = data.name;
+    description.textContent = data.about;
+    avatar.style.backgroundImage = `url(${data.avatar})`;
+  });
+}
 
 loadProfile();
