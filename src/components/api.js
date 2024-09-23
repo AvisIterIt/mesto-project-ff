@@ -72,6 +72,7 @@ export function deleteCardApi(cardId) {
 
 export function updateVisibleLikes(isLiked, cardId) {
   const method = isLiked ? "PUT" : "DELETE";
+  console.log(cardId);
 
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: method,

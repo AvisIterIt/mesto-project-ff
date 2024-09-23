@@ -1,6 +1,6 @@
 import "../src/pages/index.css";
 import { createCard, likeCallback, deleteCard } from "./components/card.js";
-import { cohort, myId } from "./components/constants.js";
+import { cohort } from "./components/constants.js";
 import { onOverlayClick, closeModal, openModal } from "./components/modal.js";
 import { enableValidation } from "./components/validation.js";
 import {
@@ -8,6 +8,7 @@ import {
   avatarImgApi,
   addCardApi,
   fetchProfile,
+  getCards,
 } from "./components/api.js";
 
 const editButton = document.querySelector(".profile__edit-button"); // Кнопка редактирования имени и информации о себе
@@ -30,6 +31,8 @@ const imagePopup = document.querySelector(".popup__image"); // Картинка,
 const imageCaption = document.querySelector(".popup__caption"); // Текст, который вставляется в попап
 const avatarForm = avatarModal.querySelector(".popup__form");
 const avatarInput = avatarForm.querySelector(".popup__input_type_url");
+
+let myId;
 
 // Открытие popup
 
@@ -194,4 +197,8 @@ export function loadProfile() {
   });
 }
 
-loadProfile();
+Promise.all([fetchProfile(), getCards()]).then(([profileRes, cardsRes]) => {
+  myId = profileRes._id;
+  getCards(cardsRes, myId);
+  loadProfile(profileRes);
+});

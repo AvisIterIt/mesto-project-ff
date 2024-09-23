@@ -1,5 +1,4 @@
 import { updateVisibleLikes, deleteCardApi } from "../components/api";
-import { myId } from "./constants";
 import { getCards } from "./api";
 import { openImage, cardList } from "../index";
 
@@ -18,7 +17,13 @@ getCards().then((data) => {
 });
 
 // Функция создания карточки
-export function createCard(data, deleteCallback, imgCallback, likeCallback) {
+export function createCard(
+  data,
+  deleteCallback,
+  imgCallback,
+  likeCallback,
+  myId
+) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate.cloneNode(true);
 

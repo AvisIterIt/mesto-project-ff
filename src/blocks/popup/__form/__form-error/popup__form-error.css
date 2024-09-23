@@ -22,7 +22,7 @@
   border-bottom: 1px solid red;
 }
 
-.popup__button_disabled {
+.popup__form .popup__button_disabled {
   background-color: #ccc;
   pointer-events: none;
 }
