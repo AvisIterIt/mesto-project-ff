@@ -112,7 +112,7 @@ editFormElement.addEventListener("submit", handleProfileFormSubmit);
 
 // Добавление карточки
 
-function addCardSubmit(e) {
+function addCardSubmit(e, inactiveButtonClass) {
   e.preventDefault();
   const name = cardNameInput.value;
   const link = cardLinkInput.value;
@@ -135,23 +135,23 @@ function addCardSubmit(e) {
     () => {
       openImage(link, name);
     },
-    likeCallback
+    likeCallback,
+    myId
   );
 
   addCardApi(name, link)
     .then(() => {
       addCard(newCard);
       addSaveButton.textContent = "Сохранение...";
-      addSaveButton.disabled = true;
-      closeModal(addModal);
+      addSaveButton.classList.add(inactiveButtonClass);
       addCardForm.reset();
+      closeModal(addModal);
     })
     .catch((error) => {
       console.error(error);
     })
     .finally(() => {
       addSaveButton.textContent = "Сохранить";
-      addSaveButton.disabled = false;
     });
 }
 
@@ -166,7 +166,9 @@ export function openImage(link, name) {
   openModal(cardModal);
 }
 
-addCardForm.addEventListener("submit", addCardSubmit);
+addCardForm.addEventListener("submit", (e) =>
+  addCardSubmit(e, "popup__button_disabled")
+);
 
 enableValidation({
   formSelector: ".popup__form",
@@ -199,26 +201,35 @@ avatarForm.addEventListener("submit", (e) => {
     });
 });
 
-export function loadProfile() {
+function loadProfile(profile) {
   const title = document.querySelector(".profile__title");
   const description = document.querySelector(".profile__description");
   const avatar = document.querySelector(".profile__image");
 
-  fetchProfile()
-    .then((data) => {
-      title.textContent = data.name;
-      description.textContent = data.about;
-      avatar.style.backgroundImage = `url(${data.avatar})`;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  title.textContent = profile.name;
+  description.textContent = profile.about;
+  avatar.style.backgroundImage = `url(${profile.avatar})`;
+}
+
+// Отображение карточек
+function renderCards(cards, myId) {
+  cards.forEach((cardData) => {
+    const cardElement = createCard(
+      cardData,
+      deleteCard,
+      openImage,
+      likeCallback,
+      myId
+    );
+    cardList.append(cardElement);
+  });
 }
 
 Promise.all([fetchProfile(), getCards()])
   .then(([profileRes, cardsRes]) => {
     myId = profileRes._id;
-    getCards(cardsRes, myId);
+
+    renderCards(cardsRes, myId);
     loadProfile(profileRes);
   })
   .catch((error) => {

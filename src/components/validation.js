@@ -10,8 +10,15 @@ export function enableValidation(options) {
   const forms = document.querySelectorAll(options.formSelector);
 
   forms.forEach((form) => {
-    const inputs = form.querySelectorAll(options.inputSelector);
+    const inputs = Array.from(form.querySelectorAll(options.inputSelector));
     const submitButton = form.querySelector(options.submitButtonSelector);
+
+    function isAllValid() {
+      return inputs.every((input) => {
+        const text = input.value;
+        return !isEmpty(text) && isValid(new RegExp(input.pattern), text);
+      });
+    }
 
     inputs.forEach((input) => {
       const errorElement = form.querySelector(`.${input.id}-error`);
@@ -33,7 +40,9 @@ export function enableValidation(options) {
           errorElement.classList.add(options.errorClass);
           errorElement.textContent = errorMessage;
         } else {
-          submitButton.classList.remove(options.inactiveButtonClass);
+          if (isAllValid()) {
+            submitButton.classList.remove(options.inactiveButtonClass);
+          }
           input.classList.remove(options.inputErrorClass);
           errorElement.classList.remove(options.errorClass);
           errorElement.textContent = "";

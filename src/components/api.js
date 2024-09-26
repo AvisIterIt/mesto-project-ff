@@ -70,8 +70,14 @@ export function deleteCardApi(cardId) {
 
 // Отображение лайков / Постановка и снятие лайка
 
-export function updateVisibleLikes(isLiked, cardId) {
-  const method = isLiked ? "PUT" : "DELETE";
+// type: "add" | "remove"
+export function updateVisibleLikes(type, cardId) {
+  let method = "";
+
+  if (type === "add") method = "PUT";
+  else if (type === "remove") method = "DELETE";
+
+  if (!method) return;
 
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: method,
