@@ -42,3 +42,9 @@ export function enableValidation(options) {
     });
   });
 }
+
+export function clearValidationErrors(errorMessageEdit) {
+  errorMessageEdit.forEach((errorMessage) => {
+    errorMessage.classList.remove("popup_error_visible");
+  });
+}

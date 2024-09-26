@@ -82,7 +82,11 @@ export function likeCallback(e, cardData, likeCountElement) {
     currentLikes -= 1;
   }
 
-  likeCountElement.textContent = currentLikes;
-
-  updateVisibleLikes(isLiked, cardData._id);
+  updateVisibleLikes(isLiked, cardData._id)
+    .then(() => {
+      likeCountElement.textContent = currentLikes;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
