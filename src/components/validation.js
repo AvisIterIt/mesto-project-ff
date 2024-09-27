@@ -16,7 +16,7 @@ export function enableValidation(options) {
     function isAllValid() {
       return inputs.every((input) => {
         const text = input.value;
-        return !isEmpty(text) && isValid(new RegExp(input.pattern), text);
+        return text.length > 1 && isValid(new RegExp(input.pattern), text);
       });
     }
 

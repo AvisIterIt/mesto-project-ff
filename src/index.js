@@ -117,6 +117,7 @@ function addCardSubmit(e, inactiveButtonClass) {
   const name = cardNameInput.value;
   const link = cardLinkInput.value;
   const addSaveButton = addModal.querySelector(".button");
+  addSaveButton.textContent = "Сохранение...";
 
   const newCard = createCard(
     {
@@ -142,7 +143,6 @@ function addCardSubmit(e, inactiveButtonClass) {
   addCardApi(name, link)
     .then(() => {
       addCard(newCard);
-      addSaveButton.textContent = "Сохранение...";
       addSaveButton.classList.add(inactiveButtonClass);
       addCardForm.reset();
       closeModal(addModal);

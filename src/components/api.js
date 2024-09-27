@@ -70,7 +70,6 @@ export function deleteCardApi(cardId) {
 
 // Отображение лайков / Постановка и снятие лайка
 
-// type: "add" | "remove"
 export function updateVisibleLikes(type, cardId) {
   let method = "";
 
